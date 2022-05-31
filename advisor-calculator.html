@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+        .slidecontainer {
+        width: 100%;
+        }
+
+        .slider {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 25px;
+        background: #d3d3d3;
+        outline: none;
+        opacity: 0.7;
+        -webkit-transition: .2s;
+        transition: opacity .2s;
+        }
+
+        .slider:hover {
+        opacity: 1;
+        }
+
+        .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 25px;
+        height: 25px;
+        background: #04AA6D;
+        cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+        width: 25px;
+        height: 25px;
+        background: #04AA6D;
+        cursor: pointer;
+        }
+        </style>
+    </head>
+<body>
+
+<h1>Advisor Calculator</h1>
+
+<form id="form">
+    <label for="amount">Asset Total:</label><br>
+    <input type="text" id="amount" name="amount"><br>
+    <br />
+</form>
+
+<!--
+<div class="slidecontainer">
+    <input type="range" min="0" max="2000000" step="10000" value="0" class="slider" id="assetRange">
+</div>
+-->
+
+<button type="button" onclick="calculateFee()">Submit</button>
+
+<p id="result"></p>
+
+<script>
+    /*
+    document.addEventListener('keyup', function(event) {
+        console.log("key released");
+        let input = document.getElementById("amount").value;
+        input = input.replace(/[\D\s\._\-]+/g, "");
+        input = input ? parseInt( input, 10 ) : 0;
+        let formatInput = () => {
+            return ( input === 0 ) ? "" : input.toLocaleString( "en-US" );
+        };
+        document.getElementById("amount").value = formatInput;
+    });*/
+    /*
+    window.addEventListener("change", function() {
+        let sliderValue = document.getElementById("assetRange").value
+        document.getElementById("amount").value = Number(sliderValue).toLocaleString('en-US');
+    });*/
+
+    function calculateFee() {
+        let assetTotal = document.getElementById("amount").value;
+        let costEdelman = calculateEdelman(assetTotal);
+        let costAbound = calculateAbound(assetTotal);
+        let costSchwab = calculateSchwab(assetTotal);
+        let text = 'Total assets under management: $' + Number(assetTotal).toLocaleString('en-US') + '<br /><br />';
+        text = text + formatResult('Edelman Financial Engines', assetTotal, costEdelman) + '<br />';
+        text = text + formatResult('Abound Wealth', assetTotal, costAbound) + '<br />';
+        text = text + formatResult('Charles Schwab', assetTotal, costSchwab) + '<br />';
+        document.getElementById("result").innerHTML = text;
+    }
+
+    function formatResult(advisorID, assetTotal, cost) {
+        let totalPercentage = (cost / assetTotal) * 100;
+        totalPercentage = totalPercentage.toFixed(3);
+        let text;
+        text = advisorID + ": $" + cost.toLocaleString('en-US') + " (" + totalPercentage+ "%)";
+        return text;
+    }
+
+    function calculateEdelman(assetTotal) {
+        let assetPart;
+        let assetLeft = assetTotal;
+        let cost = 0.0;
+        //1.75% for first $400,000
+        if (assetLeft > 400000) {
+            assetPart = 400000
+            assetLeft = assetLeft - assetPart;
+        } else {
+            assetPart = assetLeft;
+            assetLeft = 0;
+        }
+        cost = cost + (assetPart * .0175);
+        //1.25% for next $350,000
+        if (assetLeft > 350000) {
+            assetPart = 350000
+            assetLeft = assetLeft - assetPart;
+        } else {
+            assetPart = assetLeft;
+            assetLeft = 0;
+        }
+        cost = cost + (assetPart * .0125);
+        //1.00% for next $250,000
+        if (assetLeft > 250000) {
+            assetPart = 250000
+            assetLeft = assetLeft - assetPart;
+        } else {
+            assetPart = assetLeft;
+            assetLeft = 0;
+        }
+        cost = cost + (assetPart * .01);
+        //0.75% for next $2,000,000
+        if (assetLeft > 2000000) {
+            assetPart = 2000000
+            assetLeft = assetLeft - assetPart;
+        } else {
+            assetPart = assetLeft;
+            assetLeft = 0;
+        }
+        cost = cost + (assetPart * .0075);
+        //0.6% for next $7,000,000
+        if (assetLeft > 7000000) {
+            assetPart = 7000000
+            assetLeft = assetLeft - assetPart;
+        } else {
+            assetPart = assetLeft;
+            assetLeft = 0;
+        }
+        cost = cost + (assetPart * .006);
+        //.5% for the next $15M, then negotiable
+        cost = cost + (assetLeft * .005);
+        return cost;
+    }
+
+    function calculateAbound(assetTotal) {
+        let assetPart;
+        let assetLeft = assetTotal;
+        let cost = 0.0;
+        //1.25% for first $1,000,000
+        if (assetLeft > 1000000) {
+            assetPart = 1000000
+            assetLeft = assetLeft - assetPart;
+        } else {
+            assetPart = assetLeft;
+            assetLeft = 0;
+        }
+        cost = cost + (assetPart * .0125);
+        //1.00% for next $2,000,000
+        if (assetLeft > 2000000) {
+            assetPart = 2000000
+            assetLeft = assetLeft - assetPart;
+        } else {
+            assetPart = assetLeft;
+            assetLeft = 0;
+        }
+        cost = cost + (assetPart * .01);
+        //0.75% for next $2,000,000
+        if (assetLeft > 2000000) {
+            assetPart = 2000000
+            assetLeft = assetLeft - assetPart;
+        } else {
+            assetPart = assetLeft;
+            assetLeft = 0;
+        }
+        cost = cost + (assetPart * .0075);
+        //0.5% for assets over $5,000,000
+        cost = cost + (assetLeft * .005);
+
+        return cost;
+    }
+
+    function calculateSchwab(assetTotal) {
+        let assetPart;
+        let assetLeft = assetTotal;
+        let cost = 0.0;
+        //0.8% for first $1,000,000
+        if (assetLeft > 1000000) {
+            assetPart = 1000000
+            assetLeft = assetLeft - assetPart;
+        } else {
+            assetPart = assetLeft;
+            assetLeft = 0;
+        }
+        cost = cost + (assetPart * .008);
+        //0.75% for next $1,000,000
+        if (assetLeft > 1000000) {
+            assetPart = 1000000
+            assetLeft = assetLeft - assetPart;
+        } else {
+            assetPart = assetLeft;
+            assetLeft = 0;
+        }
+        cost = cost + (assetPart * .0075);
+        //0.70% for next $3,000,000
+        if (assetLeft > 3000000) {
+            assetPart = 3000000
+            assetLeft = assetLeft - assetPart;
+        } else {
+            assetPart = assetLeft;
+            assetLeft = 0;
+        }
+        cost =  cost + (assetPart * .007);
+        //0.3% for assets over $5,000,000
+        cost = cost + (assetLeft * .003);
+        return cost;
+    }
+
+</script>
+
+</body>
+</html>
